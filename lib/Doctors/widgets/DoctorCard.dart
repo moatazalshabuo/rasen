@@ -24,7 +24,7 @@ class DoctorCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(0),
           boxShadow: [BoxShadow(spreadRadius: 1,blurRadius: 1,color: Colors.black.withOpacity(0.1))],
-          border: Border(left: BorderSide(color: Orange.withOpacity(0.5),width: 2))
+          border: Border(left: BorderSide(color: Blue.withOpacity(0.5),width: 3))
         ),
         // elevation: 1,
         // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

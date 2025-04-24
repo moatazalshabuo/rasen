@@ -11,7 +11,7 @@ Widget buildServiceIcon(String iconPath, String label,VoidCallback? onTap) {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(12),
 
             boxShadow: [
               BoxShadow(
@@ -20,7 +20,7 @@ Widget buildServiceIcon(String iconPath, String label,VoidCallback? onTap) {
                 offset: Offset(0, 4),
               )
             ],
-            border: Border.all(color: Blue.withOpacity(0.9),width: 5,)
+            border: Border(left: BorderSide(color: Orange.withOpacity(0.9),width: 3,),bottom: BorderSide(color: Orange.withOpacity(0.9),width: 5,))
           ),
           clipBehavior: Clip.antiAlias,
           child: Image.asset(iconPath, width: 60, height: 50),

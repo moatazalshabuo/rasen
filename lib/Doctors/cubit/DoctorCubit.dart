@@ -8,7 +8,28 @@ import '../models/DoctorModel.dart';
 
 class DoctorCubit extends Cubit<DoctorState>{
   DoctorCubit() : super(initState());
+  int getArabicWeekdayName(String weekday) {
+      switch (weekday) {
+        case 'sunday':
+          return DateTime.sunday;
+        case 'monday':
+          return DateTime.monday;
+        case 'tuesday':
+          return DateTime.tuesday;
+        case 'wednesday':
+          return DateTime.wednesday;
+        case 'thursday':
+          return DateTime.thursday;
+        case 'friday':
+          return DateTime.friday;
+        case 'saturday':
+          return DateTime.saturday;
+        default:
+          return 0;
+      }
 
+
+  }
   final _dio = DioService();
   DoctorModel? doctorProfile;
   Future<List<DoctorModel>> fetchDoctorsByRole(String role) async {

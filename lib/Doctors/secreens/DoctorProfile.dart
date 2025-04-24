@@ -2,47 +2,32 @@ import 'package:arean/Doctors/cubit/DoctorCubit.dart';
 import 'package:arean/Doctors/state/DoctorState.dart';
 import 'package:arean/constant/colors.dart';
 import 'package:arean/screens/Bookigs.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tab_container/tab_container.dart';
-
+import '../../DefualtLayout.dart';
 import '../../screens/Home.dart';
+import '../../screens/NotifcationsPage.dart';
+import '../../screens/SettingsPage.dart';
+import '../../widgets/AppBar.dart';
 
 class DoctorProfilePage extends StatelessWidget {
+
   final int doctor_id;
   DoctorProfilePage({required this.doctor_id});
+
   // late final TabController _tabController = TabController( length: 3, vsync: DoctorProfilePage());
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<DoctorCubit>();
-
     cubit.getDoctor(this.doctor_id);
-
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Scaffold(
-        bottomNavigationBar: CurvedNavigationBar(
-          index: 1,
+      child: Defualtlayout(
+        title: "Profile",
 
-          backgroundColor: const Color(0xFFF5F7FA),
-          color: Blue,
-          items: const [
-            Icon(Icons.settings, size: 30, color: Colors.white),
-            Icon(Icons.home, size: 30, color: Colors.white),
-            Icon(Icons.notifications, size: 30, color: Colors.white),
-          ],
-          onTap: (index) {
-            if(index== 1){
-              // IconButton(icon: Icon(Icons.home, size: 30,color: Colors.white,),onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
-
-            }
-          },
-        ),
-        backgroundColor: const Color(0xFFF9FAFB),
         body: BlocConsumer<DoctorCubit, DoctorState>(
           listener: (context, state) {},
           builder: (context, state) {
@@ -64,7 +49,7 @@ class DoctorProfilePage extends StatelessWidget {
 
             final doctor = cubit.doctorProfile!;
             final profile = doctor.profile;
-            print(doctor.schedules);
+            // print(doctor.schedules);
             return SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -93,36 +78,7 @@ class DoctorProfilePage extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.arrow_back_ios_outlined,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                                const SizedBox(width: 15),
-                                const Text(
-                                  'الملف الشخصي',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Icon(
-                              Icons.notifications_active,
-                              color: Colors.yellow,
-                              size: 28,
-                            ),
-                          ],
-                        ),
+                        AppBarCustom(context,'الملف الشخصي',false),
                         Row(
                           children: [
                             Container(
@@ -161,7 +117,7 @@ class DoctorProfilePage extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => BookingPage(),
+                                        builder: (context) => BookingPage(doctor_id: doctor_id,),
                                       ),
                                     );
                                   },
@@ -298,7 +254,7 @@ class DoctorProfilePage extends StatelessWidget {
                                   ),
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       sectionTitle("الشهادات"),
                                       const SizedBox(height: 8),
@@ -324,14 +280,14 @@ class DoctorProfilePage extends StatelessWidget {
                             crossAxisSpacing: 16,
                             childAspectRatio: 1.2,
                             children:
-                                doctor.schedules.map((item) {
-                                  return ScheduleCard(
-                                    day: item.day,
-                                    period: item.period,
-                                    startTime: item.startTime,
-                                    endTime: item.endTime,
-                                  );
-                                }).toList(),
+                            doctor.schedules.map((item) {
+                              return ScheduleCard(
+                                day: item.day,
+                                period: item.period,
+                                startTime: item.startTime,
+                                endTime: item.endTime,
+                              );
+                            }).toList(),
                           ),
                         ),
                       ],
@@ -425,11 +381,12 @@ class ScheduleCard extends StatelessWidget {
     String periodLabel = period == 'morning' ? 'صباحاً' : 'مساءً';
 
     return Card(
+
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
         child: Row(
           children: [
             // الأيقونة الدائرية

@@ -1,230 +1,189 @@
 import 'package:arean/DefualtLayout.dart';
+import 'package:arean/Doctors/cubit/DoctorCubit.dart';
+import 'package:arean/Doctors/state/DoctorState.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:arean/constant/colors.dart';
 import 'package:flutter_advanced_segment/flutter_advanced_segment.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:table_calendar/table_calendar.dart';
 
-class BookingPage extends StatefulWidget {
-  const BookingPage({super.key});
+import '../widgets/AppBar.dart';
 
+class BookingPage extends StatelessWidget {
+  final int doctor_id;
+
+  const BookingPage({super.key, required this.doctor_id});
   @override
-  State<BookingPage> createState() => _BookingPageState();
-}
 
-class _BookingPageState extends State<BookingPage> {
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-  String? _selectedPeriod;
-  final _controller = ValueNotifier('specialist');
-  @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        bottomNavigationBar: CurvedNavigationBar(
-          index: 1,
-          backgroundColor: Color(0xFFF5F7FA),
-          color: Blue,
-          items: <Widget>[
-            Icon(Icons.settings, size: 30, color: Colors.white),
-            Icon(Icons.home, size: 30, color: Colors.white),
-            Icon(Icons.notifications, size: 30, color: Colors.white),
-          ],
-          onTap: (index) {
-            //Handle button tap
-          },
-        ),
-        backgroundColor: const Color(0xFFF9FAFB),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              // الجزء العلوي
-              Container(
-                width: double.infinity,
+    final cubit = context.read<DoctorCubit>();
+    cubit.getDoctor(this.doctor_id);
 
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Blue.withOpacity(0.9), Blue.withOpacity(0.2)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+    return BlocConsumer<DoctorCubit,DoctorState>(listener: (context,state){},
+    builder: (context,state){
+      if (state is LoadingDotorProfileState) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      if (state is FieldDotorProfileState) {
+        return const Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.warning, color: Colors.yellow),
+              SizedBox(width: 8),
+              Text("فشل جلب البيانات", style: TextStyle(fontSize: 18)),
+            ],
+          ),
+        );
+      }
+      final doctor = cubit.doctorProfile!;
+      final schedules = doctor.schedules;
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child:
+        Defualtlayout(
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // الجزء العلوي
+                Container(
+                  width: double.infinity,
+
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                    vertical: 10,
                   ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
+                  decoration:  BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Blue.withOpacity(0.9), Blue.withOpacity(0.6)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage('assets/Header.png'),
+                      fit: BoxFit.cover,
+                      opacity: 0.2,
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      // bottomLeft: Radius.circular(24),
+                      // bottomRight: Radius.circular(24),
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 15, bottom: 35),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24,
+                          vertical: 25,),
+                        child: AppBarCustom(context, 'حجز موعد' ,false),
+                      ),
+                      Row(
                         children: [
-                          Row(
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 15),
+                            child: CircleAvatar(
+                              radius:40,
+                              backgroundImage: NetworkImage(URL+'${doctor.photo}'),
+                            ),
+                          ),
+                          SizedBox(width: 25),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.arrow_back_ios_outlined,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 15),
+                              SizedBox(height: 12),
                               Text(
-                                'حجز موعد',
+                                "د.${doctor.fullName}",
                                 style: TextStyle(
-                                  fontSize: 18,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "${doctor.specialty}",
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 16,
                                 ),
                               ),
                             ],
                           ),
-                          Icon(
-                            Icons.notifications_active,
-                            color: Colors.yellow,
-                            size: 28,
-                          ),
                         ],
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 15),
-                          child: CircleAvatar(
-                            radius: 80,
-                            backgroundImage: AssetImage('assets/d4.jpg'),
-                          ),
-                        ),
-                        SizedBox(width: 25),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 12),
-                            Text(
-                              "د. فاطمة موسى",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              "أخصائي عظام",
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: EasyDateTimeLine(
-                  initialDate: _focusedDay,
-                  onDateChange: (selectedDate) {
-                    setState(() {
-                      _selectedDay = selectedDate;
-                      _focusedDay = selectedDate;
-                    });
-                  },
-                  activeColor: Orange,
-                  headerProps: const EasyHeaderProps(
-                    monthPickerType: MonthPickerType.switcher,
-                    showMonthPicker: true,
-                  ),
-                  dayProps: EasyDayProps(
-                    dayStructure: DayStructure.dayStrDayNum,
-                    // borderRadius: 12,
-                    activeDayStyle: DayStyle(
-                      decoration: BoxDecoration(
-                        color: Orange,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      dayStrStyle: TextStyle(color: Colors.white),
-                      dayNumStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    inactiveDayStyle: DayStyle(
-                      decoration: BoxDecoration(
-                        color: Blue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      dayStrStyle: TextStyle(color: Blue),
-                      dayNumStyle: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    ],
                   ),
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.all(25),
-                width: double.infinity,
-                child:AdvancedSegment(
-                  controller: _controller,
-                  segments: {'specialist': 'صباح', 'doctor': 'مساء'},
-                  backgroundColor: Orange.withOpacity(0.2), // خلفية رصاصية
-                  sliderColor: Colors.white, // الزر النشط أبيض
-                  borderRadius: BorderRadius.circular(20),
-                  itemPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 20,
+                SizedBox(height: 12),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Text('اختيار الموعد',textAlign: TextAlign.start,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Blue)),
+                ),
+                SizedBox(height: 12),
+                Container(
+                  color: Colors.white,
+                  margin: EdgeInsets.all(10),
+                  padding:  EdgeInsets.all(15.0),
+                  child:TableCalendar(
+                    firstDay: DateTime.utc(2010, 10, 16),
+                    lastDay: DateTime.utc(2030, 3, 14),
+                    focusedDay: DateTime.now(),
+                    enabledDayPredicate: (day) {
+                      // ترجع false لو اليوم معطّل
+                      print(schedules.map((e)=>e.day).toList());
+                      return schedules.map((e)=>cubit.getArabicWeekdayName(e.day)).toList().contains(day.weekday);
+                    },
+                    calendarStyle: CalendarStyle(
+                      disabledTextStyle: TextStyle(color: Colors.grey),
+                      // نص الأيام المعطلة
+                      todayDecoration: BoxDecoration(
+                        
+                        shape: BoxShape.circle,
+                      ),
+                      selectedDecoration: BoxDecoration(
+                        color: Blue,
+                        shape: BoxShape.circle,
+                      ),
                   ),
-                  inactiveStyle: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                ),),
+
+                SizedBox(height: 25,),
+                Container(
+                  margin: const EdgeInsets.all(30),
+                  width: double.infinity,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Blue,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  activeStyle: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  child: MaterialButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        builder: (context) => const ConfirmBookingSheet(),
+                      );
+                    },
+                    child: const Text(
+                      "تأكيد الحجز",
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ),
 
-              ),
-              SizedBox(height: 25,),
-              Container(
-                margin: const EdgeInsets.all(30),
-                width: double.infinity,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Blue,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: MaterialButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                      ),
-                      builder: (context) => const ConfirmBookingSheet(),
-                    );
-                  },
-                  child: const Text(
-                    "تأكيد الحجز",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-
-            ],
-          ),
+              ],
+            ),
+          ), title: '',
         ),
-      ),
-    );
+      );
+    });
   }
 }
 

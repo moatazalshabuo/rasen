@@ -125,7 +125,7 @@ class LoginPage extends StatelessWidget {
                               }
                               return null;
                             },
-                            keyboardType: TextInputType.phone,
+                            keyboardType: TextInputType.text,
                             obscureText: true,
                             decoration: InputDecoration(
                               labelText: "كلمة المرور",

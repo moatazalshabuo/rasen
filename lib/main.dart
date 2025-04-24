@@ -1,4 +1,5 @@
 import 'package:arean/Doctors/cubit/DoctorCubit.dart';
+import 'package:arean/Layout.dart';
 import 'package:arean/auth/cubit/LoginCubit.dart';
 import 'package:arean/auth/cubit/Registercubit.dart';
 import 'package:arean/Doctors/secreens/DoctorProfile.dart';
@@ -14,7 +15,7 @@ void main()async {
   WidgetsFlutterBinding.ensureInitialized();
   LoginCubit lc = LoginCubit();
   bool sucess = await lc.refreshAccessToken();
-  Widget body = sucess ? HomePage():LoginPage();
+  Widget body = sucess ? Layout():LoginPage();
   //
   // if (prefs.getString('access_token') != null) {
   //   body = HomePage(); // ✅ إذا فيه توكن → يروح للصفحة الرئيسية
