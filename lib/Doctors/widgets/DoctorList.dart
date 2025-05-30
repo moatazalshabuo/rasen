@@ -3,6 +3,7 @@ import 'package:arean/Doctors/models/DoctorModel.dart';
 import 'package:arean/Doctors/secreens/DoctorProfile.dart';
 import 'package:flutter/material.dart';
 
+import '../secreens/Bookigs.dart';
 import 'DoctorCard.dart';
 
 class DoctorListTab extends StatelessWidget {
@@ -12,7 +13,6 @@ class DoctorListTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder<List<DoctorModel>>(
       future: DoctorCubit().fetchDoctorsByRole(showSpecialists),
       builder: (context, snapshot) {
@@ -44,12 +44,26 @@ class DoctorListTab extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DoctorProfilePage(doctor_id: doctors[index].id,),
+                              builder:
+                                  (context) => DoctorProfilePage(
+                                    doctor_id: doctors[index].id,
+                                  ),
+                            ),
+                          ),
+                        },
+                    onTapBook:
+                        () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      BookingPage(doctorId: doctors[index].id),
                             ),
                           ),
                         },
                   ),
-                  SizedBox(height: 10,)
+                  SizedBox(height: 10),
                 ],
               ),
         );

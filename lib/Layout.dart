@@ -1,5 +1,5 @@
 import 'package:arean/constant/colors.dart';
-import 'package:arean/screens/Home.dart';
+import 'package:arean/Main/screans/Home.dart';
 import 'package:arean/screens/NotifcationsPage.dart';
 import 'package:arean/screens/SettingsPage.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';

@@ -1,33 +1,64 @@
 import 'package:arean/constant/colors.dart';
 import 'package:flutter/material.dart';
-Widget buildServiceIcon(String iconPath, String label,VoidCallback? onTap) {
+
+Widget buildServiceIcon(String iconPath, String label, VoidCallback? onTap) {
   return Column(
+    mainAxisSize: MainAxisSize.min,
     children: [
       GestureDetector(
         onTap: onTap,
         child: Container(
           height: 100,
           width: 100,
-          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.shade200,
-                blurRadius: 8,
-                offset: Offset(0, 4),
+                color: Colors.grey.shade300,
+                blurRadius: 10,
+                spreadRadius: 1,
+                offset: const Offset(0, 4),
               )
             ],
-            border: Border(left: BorderSide(color: Orange.withOpacity(0.9),width: 3,),bottom: BorderSide(color: Orange.withOpacity(0.9),width: 5,))
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Colors.white,
+                Colors.grey.shade50,
+              ],
+            ),
+            border: Border(
+              left: BorderSide(
+                color: Orange.withOpacity(0.9),
+                width: 3,
+              ),
+              bottom: BorderSide(
+                color: Orange.withOpacity(0.9),
+                width: 4,
+              ),
+            ),
           ),
           clipBehavior: Clip.antiAlias,
-          child: Image.asset(iconPath, width: 60, height: 50),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Image.asset(
+              iconPath,
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
       ),
-      SizedBox(height: 6),
-      Text(label,style: TextStyle(fontWeight: FontWeight.w500),),
+      const SizedBox(height: 10),
+      Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          letterSpacing: 0.3,
+        ),
+      ),
     ],
   );
 }

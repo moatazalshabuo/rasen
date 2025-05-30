@@ -31,8 +31,8 @@ class LoginCubit extends Cubit<LoginState> {
 
       emit(LoginSuccess(user: userData));
     } catch (e) {
-      print(e);
-      emit(LoginError(message: "فشل تسجيل الدخول"));
+
+      emit(LoginError(message: "فشل تسجيل الدخول" + e.toString()));
     }
   }
 

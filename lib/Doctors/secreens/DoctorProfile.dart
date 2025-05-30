@@ -1,47 +1,65 @@
 import 'package:arean/Doctors/cubit/DoctorCubit.dart';
 import 'package:arean/Doctors/state/DoctorState.dart';
 import 'package:arean/constant/colors.dart';
-import 'package:arean/screens/Bookigs.dart';
+import 'package:arean/Doctors/secreens/Bookigs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tab_container/tab_container.dart';
 import '../../DefualtLayout.dart';
-import '../../screens/Home.dart';
-import '../../screens/NotifcationsPage.dart';
-import '../../screens/SettingsPage.dart';
 import '../../widgets/AppBar.dart';
 
 class DoctorProfilePage extends StatelessWidget {
-
   final int doctor_id;
   DoctorProfilePage({required this.doctor_id});
-
-  // late final TabController _tabController = TabController( length: 3, vsync: DoctorProfilePage());
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<DoctorCubit>();
     cubit.getDoctor(this.doctor_id);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Defualtlayout(
-        title: "Profile",
-
+        title: "الملف الشخصي",
         body: BlocConsumer<DoctorCubit, DoctorState>(
           listener: (context, state) {},
           builder: (context, state) {
             if (state is LoadingDotorProfileState) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  color: Blue,
+                  strokeWidth: 3,
+                ),
+              );
             }
+
             if (state is FieldDotorProfileState) {
-              return const Center(
-                child: Row(
+              return Center(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.warning, color: Colors.yellow),
-                    SizedBox(width: 8),
-                    Text("فشل جلب البيانات", style: TextStyle(fontSize: 18)),
+                    Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 60),
+                    SizedBox(height: 16),
+                    Text(
+                        "فشل جلب البيانات",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600
+                        )
+                    ),
+                    SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: () => cubit.getDoctor(doctor_id),
+                      icon: Icon(Icons.refresh),
+                      label: Text("إعادة المحاولة"),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Blue,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
+                      ),
+                    )
                   ],
                 ),
               );
@@ -49,254 +67,316 @@ class DoctorProfilePage extends StatelessWidget {
 
             final doctor = cubit.doctorProfile!;
             final profile = doctor.profile;
-            // print(doctor.schedules);
-            return SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    width: double.infinity,
 
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 40,
-                    ),
+            return CustomScrollView(
+              slivers: [
+                // Header with profile information
+                SliverToBoxAdapter(
+                  child: Container(
+                    width: double.infinity,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Blue.withOpacity(0.9), Blue.withOpacity(0.6)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                        colors: [Blue, Blue.withOpacity(0.7)],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
                       ),
-                      image: DecorationImage(
-                        image: AssetImage('assets/Header.png'),
-                        fit: BoxFit.cover,
-                        opacity: 0.5,
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        // bottomLeft: Radius.circular(24),
-                        // bottomRight: Radius.circular(24),
-                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 0,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: Column(
-                      children: [
-                        AppBarCustom(context,'الملف الشخصي',false),
-                        Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: 15),
-                              child: CircleAvatar(
-                                radius: 80,
-                                backgroundImage: NetworkImage(
-                                  URL + doctor.photo!,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 25),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    child: SafeArea(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: AppBarCustom(context, 'الملف الشخصي', false),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
+                            child: Column(
                               children: [
-                                const SizedBox(height: 12),
+                                // Profile Image
+                                Hero(
+                                  tag: 'doctor-${doctor_id}',
+                                  child: Container(
+                                    width: 130,
+                                    height: 130,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 4),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 15,
+                                          spreadRadius: 0,
+                                          offset: Offset(0, 5),
+                                        )
+                                      ],
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(URL + doctor.photo!),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Name & Specialty
                                 Text(
                                   doctor.fullName,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                                    fontSize: 24,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  doctor.specialty,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
+
+                                const SizedBox(height: 8),
+
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    doctor.specialty,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 30),
-                                ElevatedButton(
+
+                                const SizedBox(height: 24),
+
+                                // Booking Button
+                                ElevatedButton.icon(
                                   onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => BookingPage(doctor_id: doctor_id,),
+                                        builder: (context) => BookingPage(doctorId: doctor_id),
                                       ),
                                     );
                                   },
+                                  icon: Icon(Icons.calendar_month_rounded),
+                                  label: Text("احجز موعد الآن"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Orange,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 32,
-                                      vertical: 12,
-                                    ),
+                                    foregroundColor: Colors.white,
+                                    minimumSize: Size(200, 50),
+                                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    elevation: 5,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                     ),
                                   ),
-                                  child: const Row(
-                                    children: [
-                                      Text(
-                                        "احجز الآن",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                        ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Statistics Cards
+                SliverToBoxAdapter(
+                  child: Container(
+                    transform: Matrix4.translationValues(0, -25, 0),
+                    margin: EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          spreadRadius: 0,
+                          blurRadius: 10,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          StatCard(
+                            icon: FontAwesomeIcons.solidStar,
+                            title: "التقييم",
+                            value: "4.5",
+                            color: Colors.amber,
+                          ),
+                          StatCard(
+                            icon: FontAwesomeIcons.userMd,
+                            title: "الخبرة",
+                            value: "${profile?.experienceYears ?? '--'} سنة",
+                            color: Orange,
+                          ),
+                          StatCard(
+                            icon: FontAwesomeIcons.userGroup,
+                            title: "الحجوزات",
+                            value: "${profile?.experienceYears ?? '--'}",
+                            color: Blue,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Content Tabs
+                SliverFillRemaining(
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: TabContainer(
+                        radius: 16,
+                        tabEdge: TabEdge.top,
+                        tabCurve: Curves.easeInOut,
+                        // transitionDuration: const Duration(milliseconds: 300),
+                        tabExtent: 60,
+                        childPadding: const EdgeInsets.all(20),
+                        color: Colors.white,
+                        selectedTextStyle: TextStyle(
+                          color: Blue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        unselectedTextStyle: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
+                        ),
+                        tabs: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.info_outline, size: 18),
+                              SizedBox(width: 8),
+                              Text('معلومات الطبيب'),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.schedule, size: 18),
+                              SizedBox(width: 8),
+                              Text('مواعيد العمل'),
+                            ],
+                          ),
+                        ],
+                        children: [
+                          // Doctor Info Tab
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // About Doctor
+                                sectionTitle("عن الطبيب", FontAwesomeIcons.userDoctor),
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.grey.shade200),
+                                  ),
+                                  child: Text(
+                                    profile?.bio ?? "لا توجد تفاصيل متاحة عن الطبيب.",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey.shade800,
+                                      height: 1.5,
+                                    ),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ),
+
+                                // Certifications
+                                if (profile?.certifications != null) ...[
+                                  const SizedBox(height: 24),
+                                  sectionTitle("الشهادات والمؤهلات", FontAwesomeIcons.award),
+                                  const SizedBox(height: 16),
+                                  Container(
+                                    padding: EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade50,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: Colors.grey.shade200),
+                                    ),
+                                    child: Text(
+                                      profile!.certifications!,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.grey.shade800,
+                                        height: 1.5,
                                       ),
-                                      SizedBox(width: 15),
-                                      Icon(Icons.add_box, color: Colors.white),
-                                    ],
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+
+                          // Schedule Tab
+                          doctor.schedules.isEmpty
+                              ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.event_busy,
+                                  size: 80,
+                                  color: Colors.grey.shade400,
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  "لا توجد مواعيد عمل متاحة حالياً",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade600,
                                   ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // 🧾 الخبرة والتقييم
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SpecialistCard(
-                          title: "الخبرة",
-                          icon: FontAwesomeIcons.medal,
-                          subtitle: "${profile?.experienceYears ?? '--'} سنة",
-                          color: Orange,
-                          Bg: Orange.withOpacity(0.3),
-                        ),
-                        SpecialistCard(
-                          title: "الحجوزات",
-                          icon: FontAwesomeIcons.users,
-                          subtitle: "${profile?.experienceYears ?? '--'} ",
-                          color: Blue,
-                          Bg: Blue.withOpacity(0.3),
-                        ),
-                        SpecialistCard(
-                          title: "التقييم",
-                          icon: FontAwesomeIcons.star,
-                          subtitle: "4.5 ",
-                          color: Colors.yellow,
-                          Bg: Colors.yellow.withOpacity(0.3),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-
-                    child: TabContainer(
-                      tabEdge: TabEdge.top,
-                      tabsStart: 0.1,
-                      tabsEnd: 0.9,
-                      tabMaxLength: 150,
-                      borderRadius: BorderRadius.circular(10),
-                      tabBorderRadius: BorderRadius.circular(10),
-                      childPadding: const EdgeInsets.all(20.0),
-                      selectedTextStyle: TextStyle(
-                        color: Blue,
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      unselectedTextStyle: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 12.0,
-                      ),
-                      colors: [Colors.white, Colors.white],
-                      tabs: [
-                        Container(
-                          padding: EdgeInsets.all(8),
-                          child: Text('معلومات الطبيب'),
-                        ),
-                        Text('مواعيد العمل'),
-                      ],
-                      children: [
-                        Container(
-                          child: Column(
-                            children: [
-                              // // 🧾 وصف الطبيب
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    sectionTitle("عن الطبيب"),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      profile?.bio ??
-                                          "لا توجد تفاصيل متاحة عن الطبيب.",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black87,
-                                        height: 1.5,
-                                      ),
-                                      textAlign: TextAlign.justify,
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              if (profile?.certifications != null) ...[
-                                const SizedBox(height: 24),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      sectionTitle("الشهادات"),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        profile!.certifications!,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: 450,
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                            childAspectRatio: 1.2,
-                            children:
-                            doctor.schedules.map((item) {
+                          )
+                              : GridView.builder(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 1.3,
+                            ),
+                            itemCount: doctor.schedules.length,
+                            itemBuilder: (context, index) {
+                              final schedule = doctor.schedules[index];
                               return ScheduleCard(
-                                day: item.day,
-                                period: item.period,
-                                startTime: item.startTime,
-                                endTime: item.endTime,
+                                day: schedule.day,
+                                period: schedule.period,
+                                startTime: schedule.startTime,
+                                endTime: schedule.endTime,
                               );
-                            }).toList(),
+                            },
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-
-                  SizedBox(height: 30),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
@@ -304,56 +384,68 @@ class DoctorProfilePage extends StatelessWidget {
     );
   }
 
-  Widget sectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(color: Blue, fontWeight: FontWeight.bold, fontSize: 18),
+  Widget sectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Blue),
+        SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            color: Blue,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+      ],
     );
   }
 }
 
-class SpecialistCard extends StatelessWidget {
+class StatCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String subtitle;
+  final String value;
   final Color color;
-  final Color Bg;
 
-  const SpecialistCard({
+  const StatCard({
     Key? key,
     required this.icon,
     required this.title,
-    required this.subtitle,
+    required this.value,
     required this.color,
-    required this.Bg,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 90,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: this.Bg,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          FaIcon(icon, size: 28, color: this.color),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-            textAlign: TextAlign.center,
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(fontSize: 11, color: Colors.black),
-            textAlign: TextAlign.center,
+          child: Icon(icon, color: color, size: 22),
+        ),
+        SizedBox(height: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey.shade600,
           ),
-        ],
-      ),
+        ),
+        SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -374,55 +466,85 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IconData icon =
-        period == 'morning' ? FontAwesomeIcons.solidSun : FontAwesomeIcons.moon;
-    Color iconColor =
-        period == 'morning' ? Colors.orange.shade600 : Colors.indigo.shade600;
-    String periodLabel = period == 'morning' ? 'صباحاً' : 'مساءً';
+    final bool isMorning = period == 'morning';
+    final IconData icon = isMorning ? FontAwesomeIcons.sun : FontAwesomeIcons.moon;
+    final Color cardColor = isMorning ? Colors.amber.shade50 : Colors.indigo.shade50;
+    final Color iconColor = isMorning ? Colors.amber.shade700 : Colors.indigo.shade700;
+    final Color borderColor = isMorning ? Colors.amber.shade200 : Colors.indigo.shade200;
+    final String periodLabel = isMorning ? 'صباحاً' : 'مساءً';
 
-    return Card(
-
-      elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-        child: Row(
-          children: [
-            // الأيقونة الدائرية
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
-                shape: BoxShape.circle,
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Day name with icon
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: iconColor, size: 16),
+              SizedBox(width: 8),
+              Text(
+                day,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-              child: FaIcon(icon, color: iconColor, size: 17),
-            ),
-            const SizedBox(width: 16),
+            ],
+          ),
 
-            // التفاصيل
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    day,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '$periodLabel ',
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                ],
+          SizedBox(height: 8),
+
+          // Period indicator
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              periodLabel,
+              style: TextStyle(
+                fontSize: 14,
+                color: iconColor,
+                fontWeight: FontWeight.w500,
               ),
             ),
-          ],
-        ),
+          ),
+
+          SizedBox(height: 8),
+
+          // Time
+          startTime.isNotEmpty && endTime.isNotEmpty
+              ? Text(
+            "$startTime - $endTime",
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade700,
+            ),
+          )
+              : Text(
+            "الوقت غير محدد",
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade500,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
       ),
     );
   }

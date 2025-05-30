@@ -28,7 +28,7 @@ class DioService {
       return response;
     }on DioException catch (e) {
       if (e.response != null) {
-        print("❌ Backend Error: ${e.response?.data}");
+        // print("❌ Backend Error: ${e.response?.data}");
         // رمي الاستجابة كاملة لو فيها بيانات خطأ
         throw e.response!.data;
       }
@@ -45,7 +45,7 @@ class DioService {
     Map<String, String>? header,
   }) async {
     if (header != null) _dio.options.headers.addAll(header);
-    print('here work');
+
     try {
       final response = await _dio.post(endpoint, data: data);
       // print(response);
@@ -59,7 +59,7 @@ class DioService {
       }
 
       // رمي استثناء عام لو مافيش رد
-      throw {'error': 'حدث خطأ في الاتصال بالسيرفر'};
+      throw {'error': '${e}  حدث خطأ في الاتصال بالسيرفر'};
     }
   }
 

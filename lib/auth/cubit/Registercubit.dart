@@ -12,6 +12,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(LoadingState());
     try {
       var response = await _dio.post('register', data);
+      print(response);
       if(response.statusCode == 201 || response.statusCode == 200){
         emit(SuccessState());
       }else{
@@ -19,13 +20,11 @@ class AuthCubit extends Cubit<AuthState> {
         emit(FieldState(message: "خطأ غير متوقع"));
       }
     } catch (error) {
-      if (error is Map<String, dynamic>) {
+
         // نمرر الرسالة إلى الحالة
-        String message = error.values.first[0]; // أول خطأ من الباكند
+        String message = error.toString(); // أول خطأ من الباكند
         emit(FieldState(message: message));
-      } else {
-        emit(FieldState(message: "خطأ غير متوقع"));
-      }
+
     }
   }
 }

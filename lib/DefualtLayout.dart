@@ -1,7 +1,8 @@
 import 'package:arean/constant/colors.dart';
-import 'package:arean/screens/Home.dart';
+import 'package:arean/Main/screans/Home.dart';
 import 'package:arean/screens/NotifcationsPage.dart';
 import 'package:arean/screens/SettingsPage.dart';
+import 'package:arean/widgets/Drawer.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -30,7 +31,6 @@ class Defualtlayout extends StatelessWidget {
         appBar:appBar,
           backgroundColor: const Color(0xFFF5F7FA),
           body:body,
-
           // bottomNavigationBar: CurvedNavigationBar(
           //   index: currentIndex,
           //
